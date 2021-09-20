@@ -10,12 +10,12 @@ $author_name = "Paula Videvik";
 $todays_adjective_html = "";
 $todays_adjective_error = "";
 $todays_adjective = null;
-if(isset($_POST["adjective_submit"])) {
+if (isset($_POST["adjective_submit"])) {
     //kontrollin, kas midagi kirjutati
-    if(!empty($_POST["todays_adjective_input"])) {
-        $todays_adjective_html = "<p>Tänane päev on " .$_POST["todays_adjective_input"] .".</p>";
+    if (!empty($_POST["todays_adjective_input"])) {
+        $todays_adjective_html = "<p>Tänane päev on " . $_POST["todays_adjective_input"] . ".</p>";
         $todays_adjective = $_POST["todays_adjective_input"];
-    } else{
+    } else {
         $todays_adjective_error = " Palun sisesta tänase kohta sobiv omadussõna";
     }
 }
@@ -50,19 +50,41 @@ $file_count = count($photo_files);
 $photo_num = mt_rand(0, $file_count - 1);
 $photo_html = '<img src="' . $photo_dir . $photo_files[$photo_num] . '" alt="ilus pilt">';
 
-// tsükkel
-$photo_list_html = "<ul>";
-for($i = 0; $i < $file_count; $i++) {
-    $photo_list_html .= "<li>" .$photo_files[$i] ."</li>"; // .= lisab juurde
-}
-$photo_list_html .= "</ul>";
 
+// rippmenüü submit nupu kontroll ja foto näitamine
+$selected = null;
+if (isset($_POST["select_submit"])) {
+    if (!empty($_POST["photo_select"])) {
+        $selected = $_POST["photo_select"];
+        $photo_html = '<img src="' . $photo_dir . $photo_files[$selected] . '" alt="valitud pilt">';
+    }
+}
+
+// näidatava foto nimi
+$photo_shown = null;
 //rippmenüü fotodest
 $photo_select_html = '<select name="photo_select">';
-for($i = 0; $i < $file_count; $i++) {
-    $photo_select_html .= '<option value="' .$i .'">' .$photo_files[$i] ."</option>";
+// $photo_select_html .= '<option value="">' . "Vali foto" . '</option>';
+for ($i = 0; $i < $file_count; $i++) {
+    if ($photo_files[$i] == $photo_files[$photo_num]) {
+        $photo_select_html .=
+            '<option value="' . $i . '" selected>' . $photo_files[$i] . "</option>";
+        $photo_shown = $photo_files[$i];
+    } else if ($i == $selected) {
+        $photo_select_html .= '<option value="' . $i . '" selected>' . $photo_files[$i] . "</option>";
+        $photo_shown = $photo_files[$i];
+    } else {
+        $photo_select_html .= '<option value="' . $i . '">' . $photo_files[$i] . "</option>";
+    }
 }
 $photo_select_html .= "</select>";
+
+// tsükkel
+$photo_list_html = "<ul>";
+for ($i = 0; $i < $file_count; $i++) {
+    $photo_list_html .= "<li>" . $photo_files[$i] . "</li>"; // .= lisab juurde
+}
+$photo_list_html .= "</ul>";
 
 ?>
 
@@ -84,21 +106,23 @@ $photo_select_html .= "</select>";
     <p>Õppetöö toimub <a href="https://www.tlu.ee/dt">Tallinna Ülikooli Digitehnoloogiate instituudis</a></p>
     <hr>
     <form method="POST">
-        <input type="text" placeholder="omadussõna tänase päeva kohta" name="todays_adjective_input"
-        value="<?php echo $todays_adjective; ?>">
+        <input type="text" placeholder="omadussõna tänase päeva kohta" name="todays_adjective_input" value="<?php echo $todays_adjective; ?>">
         <input type="submit" name="adjective_submit" value="Saada">
-        <span><?php echo $todays_adjective_error;?></span>
+        <span><?php echo $todays_adjective_error; ?></span>
     </form>
-    <?php echo $todays_adjective_html;?>
+    <?php echo $todays_adjective_html; ?>
     <hr>
     <form method="POST">
-        <?php echo$photo_select_html; ?>
+        <?php echo $photo_select_html; ?>
+        <input type="submit" name="select_submit" value="Vali">
     </form>
     <hr>
     <?php
     echo $photo_html;
-    echo $photo_list_html;
     ?>
+    <hr>
+    <p>Vaatate fotot: <?php echo $photo_shown; ?> </p>
+    <hr>
 </body>
 
 </html>
