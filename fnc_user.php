@@ -24,3 +24,35 @@ function sign_up($firstname, $surname, $email, $gender, $birth_date, $password) 
 	$conn->close();
 	return $notice;
 }
+
+
+function sign_in($email, $password) {
+	$notice = null;
+	$conn = new mysqli($GLOBALS["server_host"], $GLOBALS["server_user_name"], $GLOBALS["server_password"], $GLOBALS["database"]);
+	$conn->set_charset("utf8");
+	$stmt = $conn->prepare("SELECT password FROM vprg_users WHERE email = ?");
+	echo $conn->error; // ilmub veebilehe ülaserva, ei ole mõeldud kasutajale vaid arendajale
+	$stmt->bind_param("s", $email);
+	$stmt->bind_result($password_from_db);
+	$stmt->execute();
+	if($stmt->fetch()) {
+		//kasutaja on olemas, parool tuli...
+		if(password_verify($password, $password_from_db)) {
+			// parool õige, oleme sees!
+			$stmt->close();
+			$conn->close();
+			header("Location: home.php");
+			exit();
+		} else {
+			$notice = " Kasutajatunnus või salasõna oli vale";
+		}
+	} else {
+		$notice = " Kasutajatunnus või salasõna oli vale";
+	}
+	
+	// sulgen ühendused
+	$stmt->close();
+	$conn->close();
+	return $notice;
+}
+?>

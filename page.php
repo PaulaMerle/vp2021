@@ -1,6 +1,9 @@
 <?php
 // php loetakse ülevalt alla, seepärast kood lehel üles
-
+//alustame sessiooni
+ //   session_start();
+    require_once("../../config.php");
+    require_once("fnc_user.php");
 $author_name = "Paula Videvik";
 
 // AEG
@@ -26,7 +29,7 @@ if ($weekday_now <= 5 && $hour_now >= 8 && $hour_now <= 18) {
 // FOTOD
 
 // juhusliku foto lisamine
-$photo_dir = "photos/";
+$photo_dir = "../photos/";
 // loen kataloogi sisu
 $all_files = scandir($photo_dir);
 // massiivi kaks esimest elementi (. ja ..) on käsud kataloogis liikumiseks, need tuleb välja jätta
@@ -54,6 +57,11 @@ $photo_num = mt_rand(0, $file_count - 1);
 $photo_html = '<img src="' . $photo_dir . $photo_files[$photo_num] . '" alt="ilus pilt">';
 
 // if($hour now < 7 or $hour now > 23)
+	
+// SISSELOGIMINE
+if(isset($_POST["login_submit"])){
+	sign_in($_POST["email_input"], $_POST["password_input"]);
+  }
 
 ?>
 
@@ -73,6 +81,16 @@ $photo_html = '<img src="' . $photo_dir . $photo_files[$photo_num] . '" alt="ilu
     <h1><?php echo $author_name; ?>, veebiprogrammeerimine</h1>
     <p>See leht on loodud õppetöö raames ja ei sisalda tõsiseltvõetavat sisu!</p>
     <p>Õppetöö toimub <a href="https://www.tlu.ee/dt">Tallinna Ülikooli Digitehnoloogiate instituudis</a></p>
+	<hr>
+    <form method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
+        <input type="email" name="email_input" placeholder="email ehk kasutajatunnus">
+        <input type="password" name="password_input" placeholder="salasõna">
+        <input type="submit" name="login_submit" value="Logi sisse">
+    </form>
+	
+	<p>Loo endale <a href="add_user.php">kasutajakonto</a></p>
+	<hr>
+	
     <p>Lehe avamise hetk:
         <?php echo $weekday_names_et[$weekday_now - 1] . " " . $full_time_now . ", " . $day_category; ?> </p>
     <?php echo $photo_html; ?>
